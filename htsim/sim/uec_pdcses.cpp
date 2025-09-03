@@ -115,6 +115,14 @@ mem_b UecMsg::addRecvd(UecDataPacket::seq_t seq_no) {
         assert(_sent_pkt_notrecvd.empty());
 
         set_status(MsgStatus::RecvdLast);
+
+        // AstraSim entry point
+        // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
+        unsigned flow_id = _pdc.flow_id();
+        unsigned msg_id = _msg_id;
+        int src_id = _pdc._debug_srcid;
+        int dst_id = _pdc._debug_dstid;
+        _pdc.astrasim_flow_finish_recv_cb(src_id, dst_id, _recvd_bytes, flow_id, msg_id);
     }
 
     return new_bytes;
@@ -147,6 +155,14 @@ mem_b UecMsg::addAck(UecDataPacket::seq_t ackno) {
         assert(_sent_pkt_notacked.empty());
 
         set_status(MsgStatus::Finished);
+
+        // AstraSim entry point
+        // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
+        unsigned flow_id = _pdc.flow_id();
+        unsigned msg_id = _msg_id;
+        int src_id = _pdc._debug_srcid;
+        int dst_id = _pdc._debug_dstid;
+        _pdc.astrasim_flow_finish_send_cb(src_id, dst_id, static_cast<uint64_t>(_acked_bytes), flow_id, msg_id);
 
         _stats.end_time=EventList::getTheEventList().now();
 
@@ -249,6 +265,14 @@ UecPdcSes::UecPdcSes(UecTransportConnection* connection,
 UecPdcSes::~UecPdcSes() {
     for (auto [_, msg]: _msgs) {
         delete msg;
+    }
+}
+
+flowid_t UecPdcSes::flow_id() {
+    if (_connection) {
+        return _connection->flowId();
+    } else {
+        return 0;
     }
 }
 

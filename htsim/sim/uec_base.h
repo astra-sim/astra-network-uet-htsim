@@ -78,6 +78,7 @@ public:
     /* Continue flow after a short break. Is only used when conn_reuse is enabled. */
     virtual void continueConnection() = 0;
 
+    virtual flowid_t flowId() const = 0;
     virtual ~UecTransportConnection() = default;
 };
 

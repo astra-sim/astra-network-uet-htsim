@@ -188,11 +188,11 @@ TcpSrc::receivePacket(Packet& pkt)
         // AstraSim entry point
         // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
         if (astrasim_flow_finish_send_cb) {
-            int tag = _flow.flow_id();
+            int flow_id = _flow.flow_id();
             int src_id = _debug_srcid;
             int dst_id = _debug_dstid;
-            std::cout << "Finish sending flow " << tag << " from " << src_id << " to " << dst_id << std::endl;
-            astrasim_flow_finish_send_cb(src_id, dst_id, _flow_size, tag);
+            int msg_id = 0; // Msg_id only used with UEC conn reuse
+            astrasim_flow_finish_send_cb(src_id, dst_id, _flow_size, flow_id, msg_id);
         }
     }
   
@@ -694,11 +694,11 @@ TcpSink::receivePacket(Packet& pkt) {
     // AstraSim entry point
     // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
     if (_cumulative_ack >= _src->_flow_size && astrasim_flow_finish_recv_cb) {
-        int tag = _src->getFlowId();
+        int flow_id = _src->getFlowId();
         int src_id = _debug_srcid;
         int dst_id = _debug_dstid;
-        std::cout << "Finish receiving flow " << tag << " from " << src_id << " to " << dst_id << std::endl;
-        astrasim_flow_finish_recv_cb(src_id, dst_id, _src->_flow_size, tag);
+        int msg_id = 0; // Msg_id only used with UEC conn reuse
+        astrasim_flow_finish_recv_cb(src_id, dst_id, _src->_flow_size, flow_id, msg_id);
     }
 
     send_ack(ts,marked);

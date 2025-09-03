@@ -442,6 +442,14 @@ private:
     string _nodename;
     int _node_num;
     uint32_t _dstaddr;
+
+public:
+    // for AstraSim
+    // Arguments are:
+    // src_id, dst_id, msg_size, flow_id, msg_id
+    void (*astrasim_flow_finish_send_cb)(int, int, uint64_t, unsigned, unsigned);
+    int _debug_srcid = -1;
+    int _debug_dstid = -1;
 };
 
 // Packets are received on ports, but then passed to the Sink for handling
@@ -614,6 +622,13 @@ class UecSink : public DataReceiver {
 public:
     static bool _oversubscribed_cc;
     static bool _model_pcie;
+
+    // for AstraSim
+    // Arguments are:
+    // src_id, dst_id, msg_size, flow_id, msg_id
+    void (*astrasim_flow_finish_recv_cb)(int, int, uint64_t, unsigned, unsigned);
+    int _debug_srcid = -1;
+    int _debug_dstid = -1;
 };
 
 class UecPullPacer : public EventSource {

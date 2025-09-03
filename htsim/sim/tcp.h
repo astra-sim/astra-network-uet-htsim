@@ -140,7 +140,9 @@ private:
     public:
         // for AstraSim
         inline void setFlowId(flowid_t flow_id) { _flow.set_flowid(flow_id); }
-        void (*astrasim_flow_finish_send_cb)(int, int, int, int) = nullptr;
+        // Arguments are:
+        // src_id, dst_id, msg_size, flow_id, msg_id
+        void (*astrasim_flow_finish_send_cb)(int, int, uint64_t, unsigned, unsigned) = nullptr;
         int _debug_srcid = -1;
         int _debug_dstid = -1;
 };
@@ -190,7 +192,9 @@ private:
     public:
     // for AstraSim
     inline void setFlowId(flowid_t flow_id) { _src->_flow.set_flowid(flow_id); }
-    void (*astrasim_flow_finish_recv_cb)(int, int, int, int) = nullptr;
+     // Arguments are:
+    // src_id, dst_id, msg_size, flow_id, msg_id
+    void (*astrasim_flow_finish_recv_cb)(int, int, uint64_t, unsigned, unsigned) = nullptr;
     int _debug_srcid = -1;
     int _debug_dstid = -1;
 };

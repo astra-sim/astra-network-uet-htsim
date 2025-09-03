@@ -159,6 +159,15 @@ public:  // UecMsgTacker
     virtual uint32_t getMsgCompleted() override;
 public:  // Variables
     static bool _debug; 
+
+    // For AstraSim
+    int _debug_srcid = 0;
+    int _debug_dstid = 0;
+    // Arguments are:
+    // src_id, dst_id, msg_size, flow_id, msg_id
+    void (*astrasim_flow_finish_send_cb)(int, int, uint64_t, unsigned, unsigned);
+    void (*astrasim_flow_finish_recv_cb)(int, int, uint64_t, unsigned, unsigned);
+
 private:  // Methods
     inline UecMsg::msgid_t get_next_msg_id();
     /*

@@ -613,7 +613,11 @@ void UecSrc::connectPort(uint32_t port_num,
         _flow._name = _name;
 
         if (start_time != TRIGGER_START) {
+#ifdef ASTRASIM_HTSIM
+            eventlist().sourceIsPending(*this, start_time);
+#else
             eventlist().sourceIsPending(*this, timeFromUs((uint32_t)start_time));
+#endif
         }
     }
     assert(_sink == &sink);
@@ -856,6 +860,15 @@ bool UecSrc::checkFinished(UecDataPacket::seq_t cum_ack) {
                     << " nack_dec -" << _nscc_overall_stats.dec_nack_bytes 
                     << endl;
                 _speculating = false;
+
+                // AstraSim entry point
+                // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
+                unsigned flow_id = _flow.flow_id();
+                int src_id = _debug_srcid;
+                int dst_id = _debug_dstid;
+                int msg_id = 0; // Msg_id only used with UEC conn reuse
+                astrasim_flow_finish_send_cb(src_id, dst_id, _flow_size, flow_id, msg_id);
+
                 if (_end_trigger) {
                     _end_trigger->activate();
                 }
@@ -2735,6 +2748,16 @@ void UecSink::processData(UecDataPacket& pkt) {
 
         // ack_packet->sendOn();
         _nic.sendControlPacket(ack_packet, NULL, this);
+
+        // AstraSim entry point
+        // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
+        if (_received_bytes == _src->flowsize()) {
+            unsigned flow_id = _flow.flow_id();
+            unsigned msg_id = _src->msg_tracker().has_value() ? _src->msg_tracker().value()->getMsgCompleted() : 0;
+            int src_id = _debug_srcid;
+            int dst_id = _debug_dstid;
+            astrasim_flow_finish_recv_cb(src_id, dst_id, _src->flowsize(), flow_id, msg_id);
+        }
     }
 }
 
