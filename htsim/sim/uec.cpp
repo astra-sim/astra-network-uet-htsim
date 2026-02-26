@@ -861,6 +861,7 @@ bool UecSrc::checkFinished(UecDataPacket::seq_t cum_ack) {
                     << endl;
                 _speculating = false;
 
+#ifdef ASTRASIM_HTSIM
                 // AstraSim entry point
                 // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
                 unsigned flow_id = _flow.flow_id();
@@ -868,6 +869,7 @@ bool UecSrc::checkFinished(UecDataPacket::seq_t cum_ack) {
                 int dst_id = _debug_dstid;
                 int msg_id = 0; // Msg_id only used with UEC conn reuse
                 astrasim_flow_finish_send_cb(src_id, dst_id, _flow_size, flow_id, msg_id);
+#endif
 
                 if (_end_trigger) {
                     _end_trigger->activate();
@@ -2749,6 +2751,7 @@ void UecSink::processData(UecDataPacket& pkt) {
         // ack_packet->sendOn();
         _nic.sendControlPacket(ack_packet, NULL, this);
 
+#ifdef ASTRASIM_HTSIM
         // AstraSim entry point
         // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
         if (_received_bytes == _src->flowsize()) {
@@ -2758,6 +2761,7 @@ void UecSink::processData(UecDataPacket& pkt) {
             int dst_id = _debug_dstid;
             astrasim_flow_finish_recv_cb(src_id, dst_id, _src->flowsize(), flow_id, msg_id);
         }
+#endif
     }
 }
 

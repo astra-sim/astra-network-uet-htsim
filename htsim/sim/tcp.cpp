@@ -185,6 +185,7 @@ TcpSrc::receivePacket(Packet& pkt)
 
     if (seqno >= _flow_size){
         cout << "Flow " << nodename() << " finished at " << timeAsMs(eventlist().now()) << endl;        
+#ifdef ASTRASIM_HTSIM
         // AstraSim entry point
         // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
         if (astrasim_flow_finish_send_cb) {
@@ -194,6 +195,7 @@ TcpSrc::receivePacket(Packet& pkt)
             int msg_id = 0; // Msg_id only used with UEC conn reuse
             astrasim_flow_finish_send_cb(src_id, dst_id, _flow_size, flow_id, msg_id);
         }
+#endif
     }
   
     if (seqno > _last_acked) { // a brand new ack
@@ -691,6 +693,7 @@ TcpSink::receivePacket(Packet& pkt) {
         }
     }
 
+#ifdef ASTRASIM_HTSIM
     // AstraSim entry point
     // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
     if (_cumulative_ack >= _src->_flow_size && astrasim_flow_finish_recv_cb) {
@@ -700,6 +703,7 @@ TcpSink::receivePacket(Packet& pkt) {
         int msg_id = 0; // Msg_id only used with UEC conn reuse
         astrasim_flow_finish_recv_cb(src_id, dst_id, _src->_flow_size, flow_id, msg_id);
     }
+#endif
 
     send_ack(ts,marked);
 }

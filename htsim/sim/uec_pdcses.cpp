@@ -116,6 +116,7 @@ mem_b UecMsg::addRecvd(UecDataPacket::seq_t seq_no) {
 
         set_status(MsgStatus::RecvdLast);
 
+#ifdef ASTRASIM_HTSIM
         // AstraSim entry point
         // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
         unsigned flow_id = _pdc.flow_id();
@@ -123,6 +124,7 @@ mem_b UecMsg::addRecvd(UecDataPacket::seq_t seq_no) {
         int src_id = _pdc._debug_srcid;
         int dst_id = _pdc._debug_dstid;
         _pdc.astrasim_flow_finish_recv_cb(src_id, dst_id, _recvd_bytes, flow_id, msg_id);
+#endif
     }
 
     return new_bytes;
@@ -156,6 +158,7 @@ mem_b UecMsg::addAck(UecDataPacket::seq_t ackno) {
 
         set_status(MsgStatus::Finished);
 
+#ifdef ASTRASIM_HTSIM
         // AstraSim entry point
         // Use IDs memorized at point of adding the flow, as well as unique src tag for the transition
         unsigned flow_id = _pdc.flow_id();
@@ -163,6 +166,7 @@ mem_b UecMsg::addAck(UecDataPacket::seq_t ackno) {
         int src_id = _pdc._debug_srcid;
         int dst_id = _pdc._debug_dstid;
         _pdc.astrasim_flow_finish_send_cb(src_id, dst_id, static_cast<uint64_t>(_acked_bytes), flow_id, msg_id);
+#endif
 
         _stats.end_time=EventList::getTheEventList().now();
 
@@ -268,6 +272,7 @@ UecPdcSes::~UecPdcSes() {
     }
 }
 
+#ifdef ASTRASIM_HTSIM
 flowid_t UecPdcSes::flow_id() {
     if (_connection) {
         return _connection->flowId();
@@ -275,6 +280,7 @@ flowid_t UecPdcSes::flow_id() {
         return 0;
     }
 }
+#endif
 
 UecMsg::msgid_t UecPdcSes::get_next_msg_id()
 {

@@ -78,7 +78,9 @@ public:
     /* Continue flow after a short break. Is only used when conn_reuse is enabled. */
     virtual void continueConnection() = 0;
 
+#ifdef ASTRASIM_HTSIM
     virtual flowid_t flowId() const = 0;
+#endif
     virtual ~UecTransportConnection() = default;
 };
 

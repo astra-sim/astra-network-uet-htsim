@@ -160,6 +160,7 @@ public:  // UecMsgTacker
 public:  // Variables
     static bool _debug; 
 
+#ifdef ASTRASIM_HTSIM
     // For AstraSim
     int _debug_srcid = 0;
     int _debug_dstid = 0;
@@ -167,6 +168,7 @@ public:  // Variables
     // src_id, dst_id, msg_size, flow_id, msg_id
     void (*astrasim_flow_finish_send_cb)(int, int, uint64_t, unsigned, unsigned);
     void (*astrasim_flow_finish_recv_cb)(int, int, uint64_t, unsigned, unsigned);
+#endif
 
 private:  // Methods
     inline UecMsg::msgid_t get_next_msg_id();
