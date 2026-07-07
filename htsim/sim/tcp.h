@@ -44,7 +44,6 @@ public:
 
     void set_flowsize(uint64_t flow_size_in_bytes) {
         _flow_size = flow_size_in_bytes+_mss;
-        cout << "Setting flow size to " << _flow_size << endl;
     }
     flowid_t getFlowId() {return _flow.flow_id();}
     
@@ -137,6 +136,17 @@ private:
     //void clearWhen(TcpAck::seq_t from, TcpAck::seq_t to);
     //void showWhen (int from, int to);
     string _nodename;
+
+#ifdef ASTRASIM_HTSIM
+    public:
+        // for AstraSim
+        inline void setFlowId(flowid_t flow_id) { _flow.set_flowid(flow_id); }
+        // Arguments are:
+        // src_id, dst_id, msg_size, flow_id, msg_id
+        void (*astrasim_flow_finish_send_cb)(int, int, uint64_t, unsigned, unsigned) = nullptr;
+        int _debug_srcid = -1;
+        int _debug_dstid = -1;
+#endif
 };
 
 class TcpSink : public PacketSink, public DataReceiver {
@@ -180,6 +190,17 @@ private:
     void send_ack(simtime_picosec ts,bool marked);
 
     string _nodename;
+
+#ifdef ASTRASIM_HTSIM
+    public:
+    // for AstraSim
+    inline void setFlowId(flowid_t flow_id) { _src->_flow.set_flowid(flow_id); }
+     // Arguments are:
+    // src_id, dst_id, msg_size, flow_id, msg_id
+    void (*astrasim_flow_finish_recv_cb)(int, int, uint64_t, unsigned, unsigned) = nullptr;
+    int _debug_srcid = -1;
+    int _debug_dstid = -1;
+#endif
 };
 
 class TcpRtxTimerScanner : public EventSource {
